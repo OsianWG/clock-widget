@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            /* REMOVE the line below to make it transparent again */
+            background-color: #1a1a1a; 
+            color: white;
+            font-family: Arial, sans-serif;
+            text-transform: uppercase;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .hidden { display: none; }
+        span { margin-right: 5px; }
+    </style>
+</head>
+<body>
+
+    <div id="clock-container">
+        <span id="day"></span>
+        <span id="date"></span>
+        <span id="month"></span>
+        <span id="year"></span>
+        <span id="hours"></span><span id="sep1">:</span><span id="minutes"></span><span id="sep2">:</span><span id="seconds"></span><span id="ampm"></span>
+    </div>
+
+    <script>
+        function update() {
+            const now = new Date();
+            const p = new URLSearchParams(window.location.search);
+            
+            const d = {
+                day: now.toLocaleDateString('en-US', {weekday:'short'}),
+                date: now.getDate().toString().padStart(2, '0'),
+                month: now.toLocaleDateString('en-US', {month:'short'}),
+                year: now.getFullYear(),
+                hours: (now.getHours() % 12 || 12).toString().padStart(2, '0'),
+                minutes: now.getMinutes().toString().padStart(2, '0'),
+                seconds: now.getSeconds().toString().padStart(2, '0'),
+                ampm: now.getHours() >= 12 ? 'PM' : 'AM'
+            };
+
+            for (let key in d) {
+                const el = document.getElementById(key);
+                if (el) {
+                    el.textContent = d[key];
+                    // Check URL for hideDay, hideDate, etc.
+                    if (p.has('hide' + key.charAt(0).toUpperCase() + key.slice(1))) {
+                        el.classList.add('hidden');
+                        if (key === 'minutes') document.getElementById('sep1').classList.add('hidden');
+                        if (key === 'seconds') document.getElementById('sep2').classList.add('hidden');
+                    }
+                }
+            }
+        }
+        setInterval(update, 1000);
+        update();
+    </script>
+</body>
+</html>
